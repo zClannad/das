@@ -1,0 +1,93 @@
+<style lang="less">
+  .add-header {
+    margin-top: 200rpx;
+  }
+  .add-tit {
+    font-size: 48rpx;
+    font-weight: 600;
+    color: rgb(16, 16, 16);
+  }
+  .add-prompt {
+    font-size: 24rpx;
+    color: rgb(87, 86, 87);
+  }
+  .add-middle {
+    margin-top: 140rpx;
+  }
+  .add-btn {
+    display: inline-block;
+    height: 100rpx;
+    width: 544rpx;
+    text-align: center;
+    line-height: 100rpx;
+    // height: 1000rpx;
+    font-size: 28rpx;
+    border: 1rpx solid rgb(187, 187, 187);
+    border-radius: 50rpx;
+    color: rgb(16, 16, 16);
+    background-color: #fff;
+    // color: #f60;
+  }
+  .add-manual {
+    margin-top: 40rpx;
+  }
+</style>
+<template>
+  <view class="container">
+    <view class="add-header">
+      <text class="add-tit">欢迎使用DAS收款+</text>
+    </view>
+    <view>
+      <text class="add-prompt">您有以下两种方式添加需要管理的门店</text>
+    </view>
+    <view class="add-middle">
+      <view>
+        <button class="add-btn" bindtap="openDAS">
+          打开DAS终端，扫一扫授权二维码
+        </button>
+      </view>
+      <view class="add-manual">
+        <button class="add-btn" bindtap="openDAS">
+          手动输入授权编号
+        </button>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+//   import testMixin from '../mixins/test'
+
+  export default class Index extends wepy.page {
+    config = {
+    //   navigationBarTitleText: 'DAS收款+'
+    }
+    components = {
+    }
+
+    // mixins = [testMixin]
+
+    data = {
+    }
+
+    computed = {
+      now () {
+        return +new Date()
+      }
+    }
+
+    methods = {
+      openDAS() {
+        console.log('打开DAS终端')
+      }
+    }
+
+    events = {
+
+    }
+
+    onLoad() {
+    }
+  }
+</script>

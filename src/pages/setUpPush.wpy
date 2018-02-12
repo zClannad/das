@@ -1,0 +1,180 @@
+<style lang="less">
+.set-recep {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 60rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+}
+.set-chose {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  margin-top: 80rpx;
+  .set-choseBtn {
+    // width: 49%;
+    flex: 1;
+    height: 106rpx;
+    border: 1rpx solid #bbb;
+    line-height: 106rpx;
+    text-align: center;
+    font-size: 28rpx;
+    font-weight: 600;
+    background-color: #f0f0f0;
+  }
+  .set-hover {
+    background-color: #fff;
+    border-style: dashed;
+    color: #ff9800;
+  }
+}
+.set-pickFlex {
+  display: flex;
+  margin-top: 200rpx;
+}
+.picker{
+  font-size: 28rpx;
+  .set-picker {
+    margin: 0 10rpx;
+    padding: 0 40rpx;
+    font-weight: 600;
+    border-bottom: 1rpx solid #000;
+  }
+}
+</style>
+<template>
+  <view class="container">
+    <view class="set-recep">
+      <text>接收报表推送</text>
+     <switch color="#ff9800" checked bindchange="switchChange"/>
+    </view>
+    <view class="set-chose">
+      <view class="{{dayOrWeek==1?'set-choseBtn set-hover': 'set-choseBtn'}}"
+        bindtap="dailyBtn(1)">
+        日报
+      </view>
+      <view class="{{dayOrWeek==2?'set-choseBtn set-hover': 'set-choseBtn'}}"
+        bindtap="dailyBtn(2)">
+        周报
+      </view>
+    </view>
+    <block wx:if="{{dayOrWeek==1}}">
+      <view>
+        <view class="set-pickFlex">
+          <picker mode="time" bindchange="bindtimeChange" value="{{timeIndex}}">
+            <view class="picker">
+              每天
+              <text class="set-picker">{{timeIndex}}</text>
+              推送
+            </view>
+          </picker>
+          <picker bindchange="bindDayChange" value="{{dayIndex}}" range="{{dayArray}}">
+            <view class="picker">
+              <text class="set-picker">{{dayArray[dayIndex]}}</text>
+              统计日报表
+            </view>
+          </picker>
+          <!-- <picker bindchange="bindWeekChange" value="{{weekIndex}}" range="{{weekArray}}">
+            <view class="picker">
+              每周
+              <text class="set-picker">{{weekArray[dayIndex]}}</text>
+              推送上一个星期的统计周报表
+            </view>
+          </picker> -->
+        </view>
+      </view>
+      
+    </block>
+    <block wx:if="{{dayOrWeek==2}}">
+      <view class="set-pickFlex">
+        <picker bindchange="bindWeekChange" value="{{weekIndex}}" range="{{weekArray}}">
+          <view class="picker">
+            每周
+            <text class="set-picker">{{weekArray[weekIndex]}}</text>
+            推送上一个星期的统计周报表
+          </view>
+        </picker>
+        <!-- <view class="picker">
+          每周
+          <text bindtap="openWeek" class="set-picker">{{weekArray[weekIndex]}}</text>
+          推送上一个星期的统计周报表
+        </view> -->
+      </view>
+    </block>
+  </view>
+  
+</template>
+
+<script>
+  import wepy from 'wepy'
+
+//   import testMixin from '../mixins/test'
+
+  export default class Index extends wepy.page {
+    config = {
+      // navigationBarTitleText: 'DAS收款+'
+    }
+    components = {
+      // panel: Panel,
+    }
+
+    // mixins = [testMixin]
+
+    data = {
+      // 1显示日报，2显示周报
+      dayOrWeek: 1,
+      // 日报里的时间
+      timeIndex: '23:00',
+      dayArray: ['当天', '前一天'],
+      dayIndex: 0,
+      weekArray: ['星期天', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
+      weekIndex: 0
+    }
+
+    computed = {
+      now () {
+        return +new Date()
+      }
+    }
+
+    methods = {
+      switchChange(e) {
+        console.log(e.detail)
+      },
+      // 日报和周报切换
+      dailyBtn(val) {
+        this.dayOrWeek = val
+        // console.log('点击了日报', val)
+      },
+      // 日报里时间改变时
+      bindtimeChange(e) {
+        this.timeIndex = e.detail.value
+      },
+      // 日报里选择哪天改变时
+      bindDayChange(e) {
+        this.dayIndex = e.detail.value
+      },
+      bindWeekChange(e) {
+        this.weekIndex = e.detail.value
+      }
+      // openWeek() {
+      //   var _this = this
+      //   wepy.showActionSheet({
+      //     itemList: _this.weekArray,
+      //     success: function(res) {
+      //       if (!res.cancel) {
+      //         _this.weekIndex = res.tapIndex
+      //       }
+      //     }
+      //   })
+      // }
+    }
+
+    onLoad() {
+      console.log('自定义统计onLoad')
+    }
+  }
+</script>

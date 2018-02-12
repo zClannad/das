@@ -1,0 +1,206 @@
+<style lang="less">
+.section {
+  width: 100%;
+  height: 104rpx;
+  line-height: 104rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+}
+.cus-date {
+  width: 48%;
+}
+.cus-row {
+  display: flex;
+  flex-direction: row;
+}
+.cus-imgp {
+  position: relative;
+}
+.cus-img {
+  position: relative;
+  top: 6rpx;
+  margin-right: 30rpx;
+  height: 40rpx;
+  width: 40rpx;
+}
+.line {
+  width: 100%;
+  border-bottom: 1rpx solid #999;
+}
+.cus-queryBtn {
+  margin-top: 20rpx;
+  width: 100%;
+  background-color: #fff;
+  font-size: 32rpx;
+  font-family: 'Microsoft Yahei';
+  font-weight: 600;
+}
+.cus-queryd {
+  width: 100%;
+  font-size: 28rpx;
+  .cus-time {
+    width: 100%;
+    height: 100rpx;
+    line-height: 100rpx;
+    text-align: center;
+    border: 1rpx solid #bbb;
+    border-bottom: 0rpx;
+    background-color: #f5f5f5;
+  }
+  .cus-detail {
+    width: 100%;
+    // padding: 20rpx;
+    border: 1rpx solid #bbb;
+  }
+  .cus-tabTit {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content:space-around;
+    margin: 20rpx 0;
+    width: 100%;
+  }
+  // .cus-tabOne {
+  //   width: 33%;
+  //   text-align: center;
+  // }
+  .cus-footer {
+    margin-top: 34rpx;
+    font-size: 24rpx;
+    color: rgb(150, 147, 150);
+  }
+}
+</style>
+<template>
+  <view class="container">
+    <view class="section">
+      <picker bindchange="bindPickerChange" value="{{orgIndex}}" range="{{orgList}}">
+        <view class="picker">
+          选择门店：{{orgList[orgIndex]}}
+        </view>
+      </picker>
+    </view>
+    <view class="line"></view>
+    <view class="section cus-row">
+      <picker class="cus-date" mode="date" bindchange="bindStartDate"
+        start="2015-09-01"
+        end="{{maxDate}}">
+        <view class="picker">
+          起止日期：{{startDate}}
+        </view>
+      </picker>
+      <picker class="cus-date" mode="date" bindchange="bindEndDate"
+        end="{{maxDate}}">
+        <view class="picker cus-imgp">
+          <image class="cus-img" src="image/right.png"/>
+          {{endDate}}
+        </view>
+      </picker>
+    </view>
+    <view class="line"></view>
+    <button class="cus-queryBtn" bindtap="queryBtn"> 查 询 </button>
+    <view class="oneBlock cus-queryd">
+      <block>
+        <view class="cus-time">2018年2月1日</view>
+        <view class="cus-detail">
+          <view class="cus-tabTit">
+            <view class="cus-tabOne">来客数</view> 
+            <view class="cus-tabOne">客单价</view> 
+            <view class="cus-tabOne">收款合计</view> 
+          </view>
+          <view class="cus-tabTit">
+            <view class="cus-tabOne">36人次</view> 
+            <view class="cus-tabOne">100.00元</view> 
+            <view class="cus-tabOne">￥3600.00</view> 
+          </view>
+        </view>
+      </block>
+      <block>
+        <view class="cus-time">2018年2月1日</view>
+        <view class="cus-detail">
+          <view class="cus-tabTit">
+            <view class="cus-tabOne">来客数</view> 
+            <view class="cus-tabOne">客单价</view> 
+            <view class="cus-tabOne">收款合计</view> 
+          </view>
+          <view class="cus-tabTit">
+            <view class="cus-tabOne">36人次</view> 
+            <view class="cus-tabOne">100.00元</view> 
+            <view class="cus-tabOne">￥3600.00</view> 
+          </view>
+        </view>
+      </block>
+      <view class="cus-footer">以上是全部记录</view>
+    </view>
+    
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+
+  // import testMixin from '../mixins/test'
+
+  // console.log('moduleA ignored: ', moduleA) // => moduleA ignored: {}
+
+  export default class CustomStatistics extends wepy.page {
+    config = {
+      // navigationBarTitleText: 'DAS收款+'
+    }
+    components = {
+      // panel: Panel,
+    }
+
+    // mixins = [testMixin]
+
+    data = {
+      orgList: ['重庆市信一堂民本连锁一分店', '重庆市信一堂民本连锁二分店', '重庆市信一堂民本连锁三分店'],
+      orgIndex: 1,
+      startDate: '',
+      endDate: ''
+    }
+
+    computed = {
+      maxDate() {
+        // 最大只能查询昨天的记录
+        var d = +new Date() - 24 * 60 * 60 * 1000
+        var date = new Date(d)
+        var seperator1 = '-'
+        var year = date.getFullYear()
+        var month = date.getMonth() + 1
+        var strDate = date.getDate()
+        if (month >= 1 && month <= 9) {
+          month = '0' + month
+        }
+        if (strDate >= 0 && strDate <= 9) {
+          strDate = '0' + strDate
+        }
+        var currentdate = year + seperator1 + month + seperator1 + strDate
+        return currentdate
+      }
+    }
+
+    methods = {
+      bindPickerChange(e) {
+        this.orgIndex = e.detail.value
+        console.log(this.maxDate)
+      },
+      bindStartDate(e) {
+        this.startDate = e.detail.value
+      },
+      bindEndDate(e) {
+        this.endDate = e.detail.value
+      },
+      // 查询按钮
+      queryBtn() {
+        console.log(this.startDate, this.endDate)
+      }
+    }
+
+    onLoad() {
+      this.startDate = this.maxDate
+      this.endDate = this.maxDate
+      console.log('自定义统计onLoad')
+    }
+  }
+</script>
