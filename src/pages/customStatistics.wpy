@@ -39,7 +39,6 @@
   width: 100%;
   font-size: 28rpx;
   .cus-time {
-    width: 100%;
     height: 100rpx;
     line-height: 100rpx;
     text-align: center;
@@ -60,12 +59,9 @@
     margin: 20rpx 0;
     width: 100%;
   }
-  // .cus-tabOne {
-  //   width: 33%;
-  //   text-align: center;
-  // }
   .cus-footer {
     margin-top: 34rpx;
+    text-align: center;
     font-size: 24rpx;
     color: rgb(150, 147, 150);
   }
@@ -74,9 +70,9 @@
 <template>
   <view class="container">
     <view class="section">
-      <picker bindchange="bindPickerChange" value="{{orgIndex}}" range="{{orgList}}">
+      <picker bindchange="bindOrgChange" range-key="orgName" value="{{orgIndex}}" range="{{orgList}}">
         <view class="picker">
-          选择门店：{{orgList[orgIndex]}}
+          选择门店：{{orgList[orgIndex].orgName}}
         </view>
       </picker>
     </view>
@@ -100,37 +96,24 @@
     <view class="line"></view>
     <button class="cus-queryBtn" bindtap="queryBtn"> 查 询 </button>
     <view class="oneBlock cus-queryd">
-      <block>
-        <view class="cus-time">2018年2月1日</view>
-        <view class="cus-detail">
-          <view class="cus-tabTit">
-            <view class="cus-tabOne">来客数</view> 
-            <view class="cus-tabOne">客单价</view> 
-            <view class="cus-tabOne">收款合计</view> 
+      <scroll-view scroll-y style="height: {{height-190}}px;" bindscrolltolower="bindscrolltolower">
+        <repeat for="{{receiList}}">
+          <view class="cus-time">{{item.time}}</view>
+          <view class="cus-detail">
+            <view class="cus-tabTit">
+              <text>来客数</text> 
+              <text>客单价</text> 
+              <text>收款合计</text> 
+            </view>
+            <view class="cus-tabTit">
+              <text>{{item.persNum}}人次</text> 
+              <text>{{item.unitPrice}}元</text> 
+              <text>￥{{item.total}}</text> 
+            </view>
           </view>
-          <view class="cus-tabTit">
-            <view class="cus-tabOne">36人次</view> 
-            <view class="cus-tabOne">100.00元</view> 
-            <view class="cus-tabOne">￥3600.00</view> 
-          </view>
-        </view>
-      </block>
-      <block>
-        <view class="cus-time">2018年2月1日</view>
-        <view class="cus-detail">
-          <view class="cus-tabTit">
-            <view class="cus-tabOne">来客数</view> 
-            <view class="cus-tabOne">客单价</view> 
-            <view class="cus-tabOne">收款合计</view> 
-          </view>
-          <view class="cus-tabTit">
-            <view class="cus-tabOne">36人次</view> 
-            <view class="cus-tabOne">100.00元</view> 
-            <view class="cus-tabOne">￥3600.00</view> 
-          </view>
-        </view>
-      </block>
-      <view class="cus-footer">以上是全部记录</view>
+        </repeat>
+        <view wx:if="{{loadPrompt!==''}}" class="cus-footer">{{loadPrompt}}</view>
+      </scroll-view>
     </view>
     
   </view>
@@ -139,7 +122,7 @@
 <script>
   import wepy from 'wepy'
 
-  // import testMixin from '../mixins/test'
+  import testMixin from '../mixins/test'
 
   // console.log('moduleA ignored: ', moduleA) // => moduleA ignored: {}
 
@@ -151,13 +134,23 @@
       // panel: Panel,
     }
 
-    // mixins = [testMixin]
+    mixins = [testMixin]
 
     data = {
-      orgList: ['重庆市信一堂民本连锁一分店', '重庆市信一堂民本连锁二分店', '重庆市信一堂民本连锁三分店'],
-      orgIndex: 1,
+      // orgList: ['重庆市信一堂民本连锁一分店', '重庆市信一堂民本连锁二分店', '重庆市信一堂民本连锁三分店'],
+      orgList: [],
+      orgIndex: 0,
       startDate: '',
-      endDate: ''
+      endDate: '',
+      // 收款列表
+      receiList: [],
+      // 请求页面的索引
+      pageIndex: 1,
+      pageNum: 1,
+      pageSize: 10,
+      // 总页数
+      pageCount: '',
+      loadPrompt: ''
     }
 
     computed = {
@@ -181,9 +174,8 @@
     }
 
     methods = {
-      bindPickerChange(e) {
+      bindOrgChange(e) {
         this.orgIndex = e.detail.value
-        console.log(this.maxDate)
       },
       bindStartDate(e) {
         this.startDate = e.detail.value
@@ -193,14 +185,52 @@
       },
       // 查询按钮
       queryBtn() {
-        console.log(this.startDate, this.endDate)
+        // console.log(this.orgList[this.orgIndex])
+        // console.log(this.startDate, this.endDate)
+        this.loadPrompt = '正在加载，请稍后. . .'
+        this.pageIndex = 1
+        this.postMethod('das/queryRecei', {
+          pageIndex: 1,
+          pageNum: this.pageNum,
+          pageSize: this.pageSize,
+          isRetPageCount: 1
+        }, res => {
+          this.receiList = res.list
+          this.pageCount = res.pageCount
+          this.$apply()
+        })
+      },
+      // 向下滚动到底
+      bindscrolltolower(e) {
+        // console.log('到底了')
+        // console.log(this.pageIndex, this.pageCount)
+        if (this.pageIndex < this.pageCount) {
+          this.pageIndex += 1
+          this.postMethod('das/queryRecei', {
+            pageIndex: this.pageIndex,
+            pageNum: this.pageNum,
+            pageSize: this.pageSize
+          }, res => {
+            this.receiList.push(...res.list)
+            this.$apply()
+          })
+        } else {
+          this.loadPrompt = '以上是全部记录'
+        }
       }
+    }
+    // 查询连锁机构
+    queryOrgList() {
+      this.postMethod('das/orgList', {}, res => {
+        this.orgList = res.orgInfolist
+        this.$apply()
+      })
     }
 
     onLoad() {
       this.startDate = this.maxDate
       this.endDate = this.maxDate
-      console.log('自定义统计onLoad')
+      this.queryOrgList()
     }
   }
 </script>
