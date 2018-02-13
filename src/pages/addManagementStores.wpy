@@ -79,7 +79,13 @@
 
     methods = {
       openDAS() {
-        console.log('打开DAS终端')
+        // 只允许从相机扫码
+        wepy.scanCode({
+          onlyFromCamera: true,
+          success: (res) => {
+            console.log(res)
+          }
+        })
       }
     }
 

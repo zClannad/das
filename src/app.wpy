@@ -39,7 +39,7 @@ export default class extends wepy.app {
 
   globalData = {
     userInfo: null,
-    apiUrl: 'https://www.easy-mock.com/mock/5a2fd0f82704c108b1d12ba1/example/'
+    apiUrl: 'https://www.easy-mock.com/mock/5a2fd0f82704c108b1d12ba1/example/das/'
   }
 
   constructor () {

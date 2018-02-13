@@ -174,7 +174,7 @@
     }
 
     onLoad() {
-      console.log('自定义统计onLoad')
+      // console.log('自定义统计onLoad')
     }
   }
 </script>
